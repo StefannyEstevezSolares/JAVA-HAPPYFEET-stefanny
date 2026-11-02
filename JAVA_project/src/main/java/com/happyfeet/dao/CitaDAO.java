@@ -162,5 +162,6 @@ public class CitaDAO {
         cita.setObservaciones(rs.getString("observaciones"));
 
         return cita;
+        
     }
 }
