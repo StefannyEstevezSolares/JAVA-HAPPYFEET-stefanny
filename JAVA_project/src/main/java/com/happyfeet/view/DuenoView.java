@@ -3,6 +3,7 @@ package com.happyfeet.view;
 
 import com.happyfeet.controller.DuenoController;
 import com.happyfeet.model.Dueno;
+import com.happyfeet.util.ValidacionTexto;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Scanner;
@@ -83,22 +84,49 @@ public class DuenoView {
         System.out.println("\n--- REGISTRAR DUEÑO ---");
 
         System.out.print("Nombre completo: ");
-        dueno.setNombreCompleto(scanner.nextLine());
+        String nombre = scanner.nextLine();
+
+        if (!ValidacionTexto.validarCampoObligatorio(nombre, "Nombre completo")) {
+            return;
+        }
+        dueno.setNombreCompleto(ValidacionTexto.limpiarTexto(nombre));
 
         System.out.print("Documento de identidad: ");
-        dueno.setDocumentoIdentidad(scanner.nextLine());
+        String documento = scanner.nextLine();
+
+        if (!ValidacionTexto.validarCampoObligatorio(documento, "Documento de identidad")) {
+            return;
+        }
+        dueno.setDocumentoIdentidad(ValidacionTexto.limpiarTexto(documento));
 
         System.out.print("Dirección: ");
-        dueno.setDireccion(scanner.nextLine());
+        String direccion = scanner.nextLine();
+
+        if (!ValidacionTexto.validarCampoObligatorio(direccion, "Dirección")) {
+            return;
+        }
+        dueno.setDireccion(ValidacionTexto.limpiarTexto(direccion));
 
         System.out.print("Teléfono: ");
-        dueno.setTelefono(scanner.nextLine());
+        String telefono = scanner.nextLine();
+
+        if (!ValidacionTexto.validarCampoObligatorio(telefono, "Teléfono")) {
+            return;
+        }
+        dueno.setTelefono(ValidacionTexto.limpiarTexto(telefono));
 
         System.out.print("Correo electrónico: ");
-        dueno.setEmail(scanner.nextLine());
+        String email = scanner.nextLine();
+
+        if (!ValidacionTexto.validarCampoObligatorio(email, "Correo electrónico")) {
+            return;
+        }
+        dueno.setEmail(ValidacionTexto.limpiarTexto(email));
 
         System.out.print("Contacto de emergencia: ");
-        dueno.setContactoEmergencia(scanner.nextLine());
+        dueno.setContactoEmergencia(
+                ValidacionTexto.limpiarTexto(scanner.nextLine())
+        );
 
         dueno.setActivo(true);
 
@@ -160,44 +188,44 @@ public class DuenoView {
         System.out.println("Deje vacío el campo si desea conservar el dato actual.");
 
         System.out.print("Nombre completo [" + dueno.getNombreCompleto() + "]: ");
-        String nombre = scanner.nextLine();
+        String nombre = ValidacionTexto.limpiarTexto(scanner.nextLine());
 
-        if (!nombre.trim().isEmpty()) {
+        if (!nombre.isEmpty()) {
             dueno.setNombreCompleto(nombre);
         }
 
         System.out.print("Documento [" + dueno.getDocumentoIdentidad() + "]: ");
-        String documento = scanner.nextLine();
+        String documento = ValidacionTexto.limpiarTexto(scanner.nextLine());
 
-        if (!documento.trim().isEmpty()) {
+        if (!documento.isEmpty()) {
             dueno.setDocumentoIdentidad(documento);
         }
 
         System.out.print("Dirección [" + dueno.getDireccion() + "]: ");
-        String direccion = scanner.nextLine();
+        String direccion = ValidacionTexto.limpiarTexto(scanner.nextLine());
 
-        if (!direccion.trim().isEmpty()) {
+        if (!direccion.isEmpty()) {
             dueno.setDireccion(direccion);
         }
 
         System.out.print("Teléfono [" + dueno.getTelefono() + "]: ");
-        String telefono = scanner.nextLine();
+        String telefono = ValidacionTexto.limpiarTexto(scanner.nextLine());
 
-        if (!telefono.trim().isEmpty()) {
+        if (!telefono.isEmpty()) {
             dueno.setTelefono(telefono);
         }
 
         System.out.print("Correo electrónico [" + dueno.getEmail() + "]: ");
-        String email = scanner.nextLine();
+        String email = ValidacionTexto.limpiarTexto(scanner.nextLine());
 
-        if (!email.trim().isEmpty()) {
+        if (!email.isEmpty()) {
             dueno.setEmail(email);
         }
 
         System.out.print("Contacto de emergencia [" + dueno.getContactoEmergencia() + "]: ");
-        String contacto = scanner.nextLine();
+        String contacto = ValidacionTexto.limpiarTexto(scanner.nextLine());
 
-        if (!contacto.trim().isEmpty()) {
+        if (!contacto.isEmpty()) {
             dueno.setContactoEmergencia(contacto);
         }
 
