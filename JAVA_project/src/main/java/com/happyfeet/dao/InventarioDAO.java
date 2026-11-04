@@ -9,7 +9,6 @@ import java.util.List;
 
 public class InventarioDAO {
 
-    // Registrar producto
     public boolean registrar(Inventario producto) {
 
         if (!validarProducto(producto)) {
@@ -44,7 +43,6 @@ public class InventarioDAO {
         return false;
     }
 
-    // Buscar producto por ID
     public Inventario buscarPorId(int id) {
 
         if (id <= 0) {
@@ -72,7 +70,6 @@ public class InventarioDAO {
         return null;
     }
 
-    // Listar todos los productos
     public List<Inventario> listarTodos() {
 
         List<Inventario> productos = new ArrayList<>();
@@ -94,7 +91,6 @@ public class InventarioDAO {
         return productos;
     }
 
-    // Actualizar producto
     public boolean actualizar(Inventario producto) {
 
         if (!validarProducto(producto) || producto.getId() <= 0) {
@@ -123,7 +119,6 @@ public class InventarioDAO {
         return false;
     }
 
-    // Eliminar producto
     public boolean eliminar(int id) {
 
         if (id <= 0) {
@@ -146,7 +141,6 @@ public class InventarioDAO {
         return false;
     }
 
-    // Validar información del producto
     private boolean validarProducto(Inventario producto) {
 
         if (producto == null
@@ -165,7 +159,6 @@ public class InventarioDAO {
         return true;
     }
 
-    // Asignar parámetros para INSERT y UPDATE
     private void llenarParametros(PreparedStatement ps, Inventario producto)
             throws SQLException {
 
@@ -188,7 +181,6 @@ public class InventarioDAO {
         ps.setBoolean(14, Boolean.TRUE.equals(producto.getActivo()));
     }
 
-    // Convertir resultado de MySQL a objeto Inventario
     private Inventario convertirResultado(ResultSet rs) throws SQLException {
 
         Inventario producto = new Inventario();
@@ -222,7 +214,6 @@ public class InventarioDAO {
         return producto;
     }
 
-    // INICIO: DESCONTAR EXISTENCIAS DEL INVENTARIO
     public boolean descontarStock(int productoId, int cantidad) {
 
         if (productoId <= 0 || cantidad <= 0) {
@@ -260,5 +251,48 @@ public class InventarioDAO {
 
         return false;
     }
-    // FIN: DESCONTAR EXISTENCIAS DEL INVENTARIO
+
+    public Inventario buscarPorId(Connection con, int id) throws SQLException {
+
+        String sql = "SELECT * FROM inventario WHERE id = ? FOR UPDATE";
+
+        try (PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setInt(1, id);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return convertirResultado(rs);
+                }
+            }
+        }
+
+        return null;
+    }
+
+    public boolean descontarStock(
+            Connection con, int productoId, int cantidad)
+            throws SQLException {
+
+        if (productoId <= 0 || cantidad <= 0) {
+            return false;
+        }
+
+        String sql = "UPDATE inventario "
+                + "SET cantidad_stock = cantidad_stock - ? "
+                + "WHERE id = ? "
+                + "AND activo = TRUE "
+                + "AND cantidad_stock >= ? "
+                + "AND (fecha_vencimiento IS NULL "
+                + "OR fecha_vencimiento >= CURDATE())";
+
+        try (PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setInt(1, cantidad);
+            ps.setInt(2, productoId);
+            ps.setInt(3, cantidad);
+
+            return ps.executeUpdate() > 0;
+        }
+    }
 }

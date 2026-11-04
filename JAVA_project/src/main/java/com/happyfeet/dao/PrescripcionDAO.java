@@ -198,4 +198,37 @@ public class PrescripcionDAO {
 
         return p;
     }
+
+    // INICIO: REGISTRAR PRESCRIPCIÓN CON CONEXIÓN COMPARTIDA
+    public boolean registrar(Connection con, Prescripcion prescripcion)
+            throws SQLException {
+
+        if (!validarPrescripcion(prescripcion)) {
+            return false;
+        }
+
+        String sql = "INSERT INTO prescripciones "
+                + "(consulta_id, procedimiento_id, producto_id, cantidad, "
+                + "dosis, frecuencia, duracion_dias, instrucciones) "
+                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+
+        try (PreparedStatement ps = con.prepareStatement(
+                sql, Statement.RETURN_GENERATED_KEYS)) {
+
+            llenarParametros(ps, prescripcion);
+
+            if (ps.executeUpdate() > 0) {
+
+                try (ResultSet rs = ps.getGeneratedKeys()) {
+                    if (rs.next()) {
+                        prescripcion.setId(rs.getInt(1));
+                    }
+                }
+
+                return true;
+            }
+        }
+
+        return false;
+    }
 }
