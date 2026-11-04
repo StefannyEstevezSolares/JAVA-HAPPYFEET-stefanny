@@ -221,4 +221,44 @@ public class InventarioDAO {
 
         return producto;
     }
+
+    // INICIO: DESCONTAR EXISTENCIAS DEL INVENTARIO
+    public boolean descontarStock(int productoId, int cantidad) {
+
+        if (productoId <= 0 || cantidad <= 0) {
+            System.out.println("Error: el producto y la cantidad deben ser válidos.");
+            return false;
+        }
+
+        String sql = "UPDATE inventario "
+                + "SET cantidad_stock = cantidad_stock - ? "
+                + "WHERE id = ? "
+                + "AND activo = TRUE "
+                + "AND cantidad_stock >= ? "
+                + "AND (fecha_vencimiento IS NULL "
+                + "OR fecha_vencimiento >= CURDATE())";
+
+        try (Connection con = Conexion.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setInt(1, cantidad);
+            ps.setInt(2, productoId);
+            ps.setInt(3, cantidad);
+
+            if (ps.executeUpdate() > 0) {
+                return true;
+            }
+
+            System.out.println(
+                    "No se pudo descontar el stock: verifica que el producto "
+                    + "esté activo, no esté vencido y tenga existencias suficientes."
+            );
+
+        } catch (SQLException e) {
+            System.out.println("Error al descontar existencias: " + e.getMessage());
+        }
+
+        return false;
+    }
+    // FIN: DESCONTAR EXISTENCIAS DEL INVENTARIO
 }

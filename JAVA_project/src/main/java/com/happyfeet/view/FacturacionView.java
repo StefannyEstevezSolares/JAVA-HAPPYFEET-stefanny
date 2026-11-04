@@ -2,10 +2,13 @@
 package com.happyfeet.view;
 
 import com.happyfeet.controller.FacturaController;
+import com.happyfeet.facturacion.GeneradorFacturaPDF;
 import com.happyfeet.model.Factura;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Scanner;
 
@@ -61,9 +64,6 @@ public class FacturacionView {
         } while (opcion != 0);
     }
 
-    // INTEGRACIÓN STRATEGY
-    // El total será calculado por FacturaService.
-
     private void registrar() {
 
         System.out.println("\n--- REGISTRAR FACTURA ---");
@@ -101,24 +101,41 @@ public class FacturacionView {
             if (controller.registrar(factura)) {
 
                 System.out.println("Factura registrada correctamente.");
+                System.out.println("ID: " + factura.getId());
                 System.out.println("Total calculado: Q" + factura.getTotal());
 
+                GeneradorFacturaPDF generador =
+                        new GeneradorFacturaPDF();
+
+                String ruta = generador.generar(factura);
+
+                System.out.println("PDF generado correctamente.");
+                System.out.println("Ubicación: " + ruta);
+
             } else {
+
                 System.out.println("No se pudo registrar la factura.");
             }
 
         } catch (IllegalArgumentException e) {
+
             System.out.println("Error: " + e.getMessage());
+
+        } catch (IOException e) {
+
+            System.out.println(
+                    "La factura se registró, pero ocurrió un error al generar el PDF."
+            );
+
+            System.out.println(e.getMessage());
         }
     }
 
-
-    // Buscar factura
     private void buscar() {
 
         System.out.println("\n--- BUSCAR FACTURA ---");
-        System.out.print("Ingrese el ID: ");
 
+        System.out.print("Ingrese el ID: ");
         int id = leerEntero();
 
         Factura factura = controller.buscarPorId(id);
@@ -130,7 +147,6 @@ public class FacturacionView {
         }
     }
 
-    // Listar facturas
     private void listar() {
 
         System.out.println("\n--- LISTA DE FACTURAS ---");
@@ -148,17 +164,11 @@ public class FacturacionView {
         }
     }
 
-    // ==================================================
-    // INTEGRACIÓN STRATEGY
-    // INICIO: ACTUALIZACIÓN DE FACTURA
-    // El total se vuelve a calcular antes de actualizar.
-    // ==================================================
-
     private void actualizar() {
 
         System.out.println("\n--- ACTUALIZAR FACTURA ---");
-        System.out.print("Ingrese el ID de la factura: ");
 
+        System.out.print("Ingrese el ID de la factura: ");
         int id = leerEntero();
 
         Factura factura = controller.buscarPorId(id);
@@ -202,37 +212,53 @@ public class FacturacionView {
                 System.out.println("Total calculado: Q" + factura.getTotal());
 
             } else {
+
                 System.out.println("No se pudo actualizar la factura.");
             }
 
         } catch (IllegalArgumentException e) {
+
             System.out.println("Error: " + e.getMessage());
         }
     }
 
-
-    // Eliminar factura
     private void eliminar() {
 
         System.out.println("\n--- ELIMINAR FACTURA ---");
-        System.out.print("Ingrese el ID: ");
 
+        System.out.print("Ingrese el ID de la factura: ");
         int id = leerEntero();
 
-        if (controller.eliminar(id)) {
-            System.out.println("Factura eliminada correctamente.");
-        } else {
-            System.out.println("No se pudo eliminar la factura.");
+        try {
+
+            if (controller.eliminar(id)) {
+                System.out.println("Factura eliminada correctamente.");
+            } else {
+                System.out.println("No se encontró la factura.");
+            }
+
+        } catch (IllegalArgumentException e) {
+
+            System.out.println("Error: " + e.getMessage());
         }
     }
 
-    // Mostrar información de la factura
     private void mostrarFactura(Factura factura) {
 
+        DateTimeFormatter formato =
+                DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+
         System.out.println("\nID: " + factura.getId());
-        System.out.println("ID del dueño: " + factura.getDuenoId());
         System.out.println("Número de factura: " + factura.getNumeroFactura());
-        System.out.println("Fecha de emisión: " + factura.getFechaEmision());
+
+        if (factura.getFechaEmision() != null) {
+            System.out.println(
+                    "Fecha de emisión: "
+                    + factura.getFechaEmision().format(formato)
+            );
+        }
+
+        System.out.println("ID del dueño: " + factura.getDuenoId());
         System.out.println("Subtotal: Q" + factura.getSubtotal());
         System.out.println("Impuesto: Q" + factura.getImpuesto());
         System.out.println("Descuento: Q" + factura.getDescuento());
@@ -242,25 +268,33 @@ public class FacturacionView {
         System.out.println("Observaciones: " + factura.getObservaciones());
     }
 
-    // Leer número entero
     private int leerEntero() {
 
         while (true) {
+
             try {
-                return Integer.parseInt(scanner.nextLine().trim());
+
+                int valor = Integer.parseInt(scanner.nextLine());
+                return valor;
+
             } catch (NumberFormatException e) {
+
                 System.out.print("Ingrese un número entero válido: ");
             }
         }
     }
 
-    // Leer importe decimal
     private BigDecimal leerDecimal() {
 
         while (true) {
+
             try {
-                return new BigDecimal(scanner.nextLine().trim());
+
+                BigDecimal valor = new BigDecimal(scanner.nextLine());
+                return valor;
+
             } catch (NumberFormatException e) {
+
                 System.out.print("Ingrese un importe válido: ");
             }
         }

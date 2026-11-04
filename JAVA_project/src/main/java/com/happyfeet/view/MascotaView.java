@@ -3,6 +3,8 @@ package com.happyfeet.view;
 
 import com.happyfeet.controller.MascotaController;
 import com.happyfeet.model.Mascota;
+import com.happyfeet.model.MascotaBuilder;
+
 import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.time.LocalDate;
@@ -31,6 +33,7 @@ public class MascotaView {
             System.out.println("3. Buscar mascota por ID");
             System.out.println("4. Actualizar mascota");
             System.out.println("5. Desactivar mascota");
+            System.out.println("6. Clonar mascota");
             System.out.println("0. Regresar");
             System.out.print("Seleccione una opción: ");
 
@@ -59,6 +62,10 @@ public class MascotaView {
                         desactivarMascota();
                         break;
 
+                    case 6:
+                        clonarMascota();
+                        break;
+
                     case 0:
                         System.out.println("Regresando al menú principal...");
                         break;
@@ -75,6 +82,10 @@ public class MascotaView {
                 System.out.println("Formato de fecha incorrecto. Utilice AAAA-MM-DD.");
                 opcion = -1;
 
+            } catch (IllegalArgumentException e) {
+                System.out.println("Error: " + e.getMessage());
+                opcion = -1;
+
             } catch (SQLException e) {
                 System.out.println("Error de base de datos: " + e.getMessage());
                 opcion = -1;
@@ -83,63 +94,97 @@ public class MascotaView {
         } while (opcion != 0);
     }
 
-    private void registrarMascota() throws SQLException {
+    // REGISTRAR MASCOTA - PATRÓN BUILDER
 
-        Mascota mascota = new Mascota();
+    private void registrarMascota() throws SQLException {
 
         System.out.println("\n--- REGISTRAR MASCOTA ---");
 
         System.out.print("ID del dueño: ");
-        mascota.setDuenoId(Integer.parseInt(scanner.nextLine()));
+        int duenoId = Integer.parseInt(scanner.nextLine());
 
         System.out.print("Nombre de la mascota: ");
-        mascota.setNombre(scanner.nextLine());
+        String nombre = scanner.nextLine();
 
         System.out.print("ID de la raza: ");
-        mascota.setRazaId(Integer.parseInt(scanner.nextLine()));
+        int razaId = Integer.parseInt(scanner.nextLine());
+
+        MascotaBuilder builder = new MascotaBuilder(
+                duenoId,
+                nombre,
+                razaId
+        );
 
         System.out.print("Fecha de nacimiento (AAAA-MM-DD): ");
         String fecha = scanner.nextLine();
 
         if (!fecha.trim().isEmpty()) {
-            mascota.setFechaNacimiento(LocalDate.parse(fecha));
+            builder.fechaNacimiento(LocalDate.parse(fecha));
         }
 
         System.out.print("Sexo: ");
-        mascota.setSexo(scanner.nextLine());
+        String sexo = scanner.nextLine();
+
+        if (!sexo.trim().isEmpty()) {
+            builder.sexo(sexo);
+        }
 
         System.out.print("Peso actual: ");
         String peso = scanner.nextLine();
 
         if (!peso.trim().isEmpty()) {
-            mascota.setPesoActual(new BigDecimal(peso));
+            builder.pesoActual(new BigDecimal(peso));
         }
 
         System.out.print("Microchip: ");
-        mascota.setMicrochip(scanner.nextLine());
+        String microchip = scanner.nextLine();
+
+        if (!microchip.trim().isEmpty()) {
+            builder.microchip(microchip);
+        }
 
         System.out.print("Tatuaje: ");
-        mascota.setTatuaje(scanner.nextLine());
+        String tatuaje = scanner.nextLine();
+
+        if (!tatuaje.trim().isEmpty()) {
+            builder.tatuaje(tatuaje);
+        }
 
         System.out.print("URL de fotografía: ");
-        mascota.setUrlFoto(scanner.nextLine());
+        String urlFoto = scanner.nextLine();
+
+        if (!urlFoto.trim().isEmpty()) {
+            builder.urlFoto(urlFoto);
+        }
 
         System.out.print("Alergias: ");
-        mascota.setAlergias(scanner.nextLine());
+        String alergias = scanner.nextLine();
+
+        if (!alergias.trim().isEmpty()) {
+            builder.alergias(alergias);
+        }
 
         System.out.print("Condiciones preexistentes: ");
-        mascota.setCondicionesPreexistentes(scanner.nextLine());
+        String condiciones = scanner.nextLine();
 
-        mascota.setActivo(true);
+        if (!condiciones.trim().isEmpty()) {
+            builder.condicionesPreexistentes(condiciones);
+        }
+
+        Mascota mascota = builder.build();
 
         int resultado = mascotaController.registrar(mascota);
 
         if (resultado > 0) {
-            System.out.println("Mascota registrada correctamente. ID: " + resultado);
+            System.out.println(
+                    "Mascota registrada correctamente. ID: " + resultado
+            );
         } else {
             System.out.println("No fue posible registrar la mascota.");
         }
     }
+
+    // LISTAR MASCOTAS
 
     private void listarMascotas() throws SQLException {
 
@@ -157,6 +202,8 @@ public class MascotaView {
         }
     }
 
+    // BUSCAR MASCOTA
+
     private void buscarMascota() throws SQLException {
 
         System.out.println("\n--- BUSCAR MASCOTA ---");
@@ -172,6 +219,8 @@ public class MascotaView {
             System.out.println("No se encontró la mascota.");
         }
     }
+
+    // ACTUALIZAR MASCOTA
 
     private void actualizarMascota() throws SQLException {
 
@@ -276,6 +325,8 @@ public class MascotaView {
         }
     }
 
+    // DESACTIVAR MASCOTA
+
     private void desactivarMascota() throws SQLException {
 
         System.out.println("\n--- DESACTIVAR MASCOTA ---");
@@ -309,6 +360,64 @@ public class MascotaView {
             System.out.println("Operación cancelada.");
         }
     }
+
+    // INICIO: PATRÓN PROTOTYPE
+
+    private void clonarMascota() throws SQLException {
+
+        System.out.println("\n--- CLONAR MASCOTA ---");
+
+        System.out.print("Ingrese el ID de la mascota que desea clonar: ");
+        int id = Integer.parseInt(scanner.nextLine());
+
+        Mascota original = mascotaController.buscarPorId(id);
+
+        if (original == null) {
+            System.out.println("No se encontró la mascota.");
+            return;
+        }
+
+        System.out.println("\nMascota original:");
+        mostrarDatosMascota(original);
+
+        // Crear una copia de la mascota original
+        Mascota copia = original.clonar();
+
+        System.out.print("Ingrese el nuevo nombre de la mascota: ");
+        String nuevoNombre = scanner.nextLine();
+
+        if (nuevoNombre.trim().isEmpty()) {
+            System.out.println("El nombre de la nueva mascota es obligatorio.");
+            return;
+        }
+
+        copia.setNombre(nuevoNombre);
+
+        System.out.print("Ingrese un nuevo microchip (opcional): ");
+        String nuevoMicrochip = scanner.nextLine();
+
+        if (nuevoMicrochip.trim().isEmpty()) {
+            copia.setMicrochip(null);
+        } else {
+            copia.setMicrochip(nuevoMicrochip);
+        }
+
+        // Registrar la nueva mascota
+        int resultado = mascotaController.registrar(copia);
+
+        if (resultado > 0) {
+            System.out.println("\n¡Mascota clonada correctamente!");
+            System.out.println("Nuevo ID: " + resultado);
+            System.out.println("Nombre: " + copia.getNombre());
+            System.out.println("Microchip: " + copia.getMicrochip());
+        } else {
+            System.out.println("No fue posible clonar la mascota.");
+        }
+    }
+
+    // FIN: PATRÓN PROTOTYPE
+
+    // MOSTRAR DATOS DE MASCOTA
 
     private void mostrarDatosMascota(Mascota mascota) {
 

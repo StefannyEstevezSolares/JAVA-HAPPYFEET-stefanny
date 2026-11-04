@@ -48,7 +48,32 @@ public class Mascota {
         this.activo = activo;
     }
 
+    // INICIO: PATRÓN PROTOTYPE
+
+    public Mascota clonar() {
+
+        return new Mascota(
+                0,
+                this.duenoId,
+                this.nombre,
+                this.razaId,
+                this.fechaNacimiento,
+                this.sexo,
+                this.pesoActual,
+                null,
+                this.tatuaje,
+                this.urlFoto,
+                this.alergias,
+                this.condicionesPreexistentes,
+                null,
+                true
+        );
+    }
+
+    // FIN: PATRÓN PROTOTYPE
+
     // Getters y Setters
+
     public int getId() {
         return id;
     }
