@@ -3,6 +3,7 @@ package com.happyfeet.view;
 
 import com.happyfeet.controller.FacturaController;
 import com.happyfeet.model.Factura;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -60,7 +61,9 @@ public class FacturacionView {
         } while (opcion != 0);
     }
 
-    // Registrar factura
+    // INTEGRACIÓN STRATEGY
+    // El total será calculado por FacturaService.
+
     private void registrar() {
 
         System.out.println("\n--- REGISTRAR FACTURA ---");
@@ -84,9 +87,6 @@ public class FacturacionView {
         System.out.print("Descuento: ");
         factura.setDescuento(leerDecimal());
 
-        System.out.print("Total: ");
-        factura.setTotal(leerDecimal());
-
         System.out.print("Método de pago: ");
         factura.setMetodoPago(scanner.nextLine());
 
@@ -96,12 +96,22 @@ public class FacturacionView {
         System.out.print("Observaciones: ");
         factura.setObservaciones(scanner.nextLine());
 
-        if (controller.registrar(factura)) {
-            System.out.println("Factura registrada correctamente.");
-        } else {
-            System.out.println("No se pudo registrar la factura.");
+        try {
+
+            if (controller.registrar(factura)) {
+
+                System.out.println("Factura registrada correctamente.");
+                System.out.println("Total calculado: Q" + factura.getTotal());
+
+            } else {
+                System.out.println("No se pudo registrar la factura.");
+            }
+
+        } catch (IllegalArgumentException e) {
+            System.out.println("Error: " + e.getMessage());
         }
     }
+
 
     // Buscar factura
     private void buscar() {
@@ -138,7 +148,12 @@ public class FacturacionView {
         }
     }
 
-    // Actualizar factura
+    // ==================================================
+    // INTEGRACIÓN STRATEGY
+    // INICIO: ACTUALIZACIÓN DE FACTURA
+    // El total se vuelve a calcular antes de actualizar.
+    // ==================================================
+
     private void actualizar() {
 
         System.out.println("\n--- ACTUALIZAR FACTURA ---");
@@ -170,9 +185,6 @@ public class FacturacionView {
         System.out.print("Descuento: ");
         factura.setDescuento(leerDecimal());
 
-        System.out.print("Total: ");
-        factura.setTotal(leerDecimal());
-
         System.out.print("Método de pago: ");
         factura.setMetodoPago(scanner.nextLine());
 
@@ -182,12 +194,22 @@ public class FacturacionView {
         System.out.print("Observaciones: ");
         factura.setObservaciones(scanner.nextLine());
 
-        if (controller.actualizar(factura)) {
-            System.out.println("Factura actualizada correctamente.");
-        } else {
-            System.out.println("No se pudo actualizar la factura.");
+        try {
+
+            if (controller.actualizar(factura)) {
+
+                System.out.println("Factura actualizada correctamente.");
+                System.out.println("Total calculado: Q" + factura.getTotal());
+
+            } else {
+                System.out.println("No se pudo actualizar la factura.");
+            }
+
+        } catch (IllegalArgumentException e) {
+            System.out.println("Error: " + e.getMessage());
         }
     }
+
 
     // Eliminar factura
     private void eliminar() {
@@ -211,10 +233,10 @@ public class FacturacionView {
         System.out.println("ID del dueño: " + factura.getDuenoId());
         System.out.println("Número de factura: " + factura.getNumeroFactura());
         System.out.println("Fecha de emisión: " + factura.getFechaEmision());
-        System.out.println("Subtotal: " + factura.getSubtotal());
-        System.out.println("Impuesto: " + factura.getImpuesto());
-        System.out.println("Descuento: " + factura.getDescuento());
-        System.out.println("Total: " + factura.getTotal());
+        System.out.println("Subtotal: Q" + factura.getSubtotal());
+        System.out.println("Impuesto: Q" + factura.getImpuesto());
+        System.out.println("Descuento: Q" + factura.getDescuento());
+        System.out.println("Total: Q" + factura.getTotal());
         System.out.println("Método de pago: " + factura.getMetodoPago());
         System.out.println("Estado: " + factura.getEstado());
         System.out.println("Observaciones: " + factura.getObservaciones());
@@ -244,4 +266,3 @@ public class FacturacionView {
         }
     }
 }
-
