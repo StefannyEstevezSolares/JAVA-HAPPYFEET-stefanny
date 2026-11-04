@@ -1,6 +1,7 @@
 
 package com.happyfeet.view;
 
+import com.happyfeet.util.ControladorErrores;
 import com.happyfeet.controller.ClubMascotasController;
 import com.happyfeet.model.ClubMascotas;
 import java.time.LocalDate;

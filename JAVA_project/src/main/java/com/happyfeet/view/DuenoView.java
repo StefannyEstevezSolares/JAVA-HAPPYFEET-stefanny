@@ -4,6 +4,7 @@ package com.happyfeet.view;
 import com.happyfeet.controller.DuenoController;
 import com.happyfeet.model.Dueno;
 import com.happyfeet.util.ValidacionTexto;
+import com.happyfeet.util.ControladorErrores;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Scanner;
@@ -65,12 +66,9 @@ public class DuenoView {
                         System.out.println("Opción no válida.");
                 }
 
-            } catch (NumberFormatException e) {
-                System.out.println("Debe ingresar un número válido.");
-                opcion = -1;
-
-            } catch (SQLException e) {
-                System.out.println("Error de base de datos: " + e.getMessage());
+            } catch (Exception e) {
+                ControladorErrores.registrar(e);
+                System.out.println("Ocurrió un error al procesar la operación.");
                 opcion = -1;
             }
 

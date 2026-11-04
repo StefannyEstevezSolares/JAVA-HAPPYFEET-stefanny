@@ -1,6 +1,7 @@
 
 package com.happyfeet.view;
 
+import com.happyfeet.util.ControladorErrores;
 import com.happyfeet.controller.AdopcionController;
 import com.happyfeet.model.Adopcion;
 import java.time.LocalDate;
@@ -34,33 +35,38 @@ public class AdopcionView {
 
             opcion = leerEntero();
 
-            switch (opcion) {
-                case 1:
-                    registrar();
-                    break;
-                case 2:
-                    buscar();
-                    break;
-                case 3:
-                    listar();
-                    break;
-                case 4:
-                    actualizar();
-                    break;
-                case 5:
-                    eliminar();
-                    break;
-                case 0:
-                    System.out.println("Regresando al menú principal...");
-                    break;
-                default:
-                    System.out.println("Opción inválida.");
+            try {
+                switch (opcion) {
+                    case 1:
+                        registrar();
+                        break;
+                    case 2:
+                        buscar();
+                        break;
+                    case 3:
+                        listar();
+                        break;
+                    case 4:
+                        actualizar();
+                        break;
+                    case 5:
+                        eliminar();
+                        break;
+                    case 0:
+                        System.out.println("Regresando al menú principal...");
+                        break;
+                    default:
+                        System.out.println("Opción inválida.");
+                }
+
+            } catch (Exception e) {
+                ControladorErrores.registrar(e);
+                System.out.println("Ocurrió un error al procesar la operación.");
             }
 
         } while (opcion != 0);
     }
 
-    // Registrar adopción
     private void registrar() {
 
         System.out.println("\n--- REGISTRAR ADOPCIÓN ---");
@@ -95,7 +101,6 @@ public class AdopcionView {
         }
     }
 
-    // Buscar adopción
     private void buscar() {
 
         System.out.println("\n--- BUSCAR ADOPCIÓN ---");
@@ -112,7 +117,6 @@ public class AdopcionView {
         }
     }
 
-    // Listar adopciones
     private void listar() {
 
         System.out.println("\n--- LISTA DE ADOPCIONES ---");
@@ -130,7 +134,6 @@ public class AdopcionView {
         }
     }
 
-    // Actualizar adopción
     private void actualizar() {
 
         System.out.println("\n--- ACTUALIZAR ADOPCIÓN ---");
@@ -175,7 +178,6 @@ public class AdopcionView {
         }
     }
 
-    // Eliminar adopción
     private void eliminar() {
 
         System.out.println("\n--- ELIMINAR ADOPCIÓN ---");
@@ -190,7 +192,6 @@ public class AdopcionView {
         }
     }
 
-    // Mostrar información
     private void mostrarAdopcion(Adopcion adopcion) {
 
         System.out.println("\nID: " + adopcion.getId());
@@ -203,7 +204,6 @@ public class AdopcionView {
         System.out.println("Fecha del primer seguimiento: " + adopcion.getFechaPrimerSeguimiento());
     }
 
-    // Leer entero
     private int leerEntero() {
 
         while (true) {
@@ -215,7 +215,6 @@ public class AdopcionView {
         }
     }
 
-    // Leer fecha obligatoria
     private LocalDate leerFecha(String mensaje) {
 
         while (true) {
@@ -229,7 +228,6 @@ public class AdopcionView {
         }
     }
 
-    // Leer fecha opcional
     private LocalDate leerFechaOpcional() {
 
         String fecha = scanner.nextLine().trim();
@@ -246,7 +244,6 @@ public class AdopcionView {
         }
     }
 
-    // Leer valor booleano
     private Boolean leerBooleano(String mensaje) {
 
         while (true) {

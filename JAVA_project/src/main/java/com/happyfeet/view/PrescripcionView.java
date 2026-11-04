@@ -1,6 +1,7 @@
 
 package com.happyfeet.view;
 
+import com.happyfeet.util.ControladorErrores;
 import com.happyfeet.controller.PrescripcionController;
 import com.happyfeet.model.Prescripcion;
 import java.time.LocalDateTime;

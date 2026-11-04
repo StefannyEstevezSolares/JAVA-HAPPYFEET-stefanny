@@ -1,5 +1,6 @@
 package com.happyfeet.view;
 
+import com.happyfeet.util.ControladorErrores;
 import com.happyfeet.controller.ProcedimientoEspecialController;
 import com.happyfeet.controller.InsumoProcedimientoController;
 import com.happyfeet.model.ProcedimientoEspecial;

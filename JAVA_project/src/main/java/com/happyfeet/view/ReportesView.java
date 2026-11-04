@@ -1,6 +1,7 @@
 
 package com.happyfeet.view;
 
+import com.happyfeet.util.ControladorErrores;
 import com.happyfeet.controller.ReportesController;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;

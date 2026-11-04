@@ -1,6 +1,7 @@
 
 package com.happyfeet.view;
 
+import com.happyfeet.util.ControladorErrores;
 import com.happyfeet.controller.RegistroJornadaVacunacionController;
 import com.happyfeet.model.RegistroJornadaVacunacion;
 import java.time.LocalDate;
@@ -33,29 +34,36 @@ public class VacunacionView {
             System.out.println("0. Volver al menú principal");
             System.out.print("Seleccione una opción: ");
 
-            opcion = leerEntero();
+            try {
+                opcion = leerEntero();
 
-            switch (opcion) {
-                case 1:
-                    registrar();
-                    break;
-                case 2:
-                    buscar();
-                    break;
-                case 3:
-                    listar();
-                    break;
-                case 4:
-                    actualizar();
-                    break;
-                case 5:
-                    eliminar();
-                    break;
-                case 0:
-                    System.out.println("Regresando al menú principal...");
-                    break;
-                default:
-                    System.out.println("Opción inválida.");
+                switch (opcion) {
+                    case 1:
+                        registrar();
+                        break;
+                    case 2:
+                        buscar();
+                        break;
+                    case 3:
+                        listar();
+                        break;
+                    case 4:
+                        actualizar();
+                        break;
+                    case 5:
+                        eliminar();
+                        break;
+                    case 0:
+                        System.out.println("Regresando al menú principal...");
+                        break;
+                    default:
+                        System.out.println("Opción inválida.");
+                }
+
+            } catch (Exception e) {
+                ControladorErrores.registrar(e);
+                System.out.println("Ocurrió un error al procesar la operación.");
+                opcion = -1;
             }
 
         } while (opcion != 0);
@@ -233,6 +241,7 @@ public class VacunacionView {
             try {
                 return Integer.parseInt(scanner.nextLine().trim());
             } catch (NumberFormatException e) {
+                ControladorErrores.registrar(e);
                 System.out.print("Ingrese un número entero válido: ");
             }
         }
@@ -252,6 +261,7 @@ public class VacunacionView {
         try {
             return Integer.parseInt(valor);
         } catch (NumberFormatException e) {
+            ControladorErrores.registrar(e);
             System.out.println("Valor inválido. Se dejará vacío.");
             return null;
         }
@@ -272,6 +282,7 @@ public class VacunacionView {
             try {
                 return LocalDate.parse(valor);
             } catch (DateTimeParseException e) {
+                ControladorErrores.registrar(e);
                 System.out.println("Formato inválido. Utilice yyyy-MM-dd.");
             }
         }

@@ -1,6 +1,7 @@
 
 package com.happyfeet.view;
 
+import com.happyfeet.util.ControladorErrores;
 import com.happyfeet.controller.VeterinarioController;
 import com.happyfeet.model.Veterinario;
 import java.sql.SQLException;
@@ -67,14 +68,17 @@ public class VeterinarioView {
                 }
 
             } catch (NumberFormatException e) {
+                ControladorErrores.registrar(e);
                 System.out.println("Debe ingresar un número válido.");
                 opcion = -1;
 
             } catch (DateTimeParseException e) {
+                ControladorErrores.registrar(e);
                 System.out.println("Formato de fecha incorrecto. Utilice AAAA-MM-DD.");
                 opcion = -1;
 
             } catch (SQLException e) {
+                ControladorErrores.registrar(e);
                 System.out.println("Error de base de datos: " + e.getMessage());
                 opcion = -1;
             }
