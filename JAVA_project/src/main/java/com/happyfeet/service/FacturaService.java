@@ -1,13 +1,15 @@
-
 package com.happyfeet.service;
 
 import com.happyfeet.dao.FacturaDAO;
+import com.happyfeet.dao.DuenoDAO;
 import com.happyfeet.facturacion.CalculoDescuento;
 import com.happyfeet.facturacion.CalculoNormal;
 import com.happyfeet.facturacion.CalculadoraFacturacion;
 import com.happyfeet.model.Factura;
+import com.happyfeet.model.Dueno;
 
 import java.math.BigDecimal;
+import java.sql.SQLException;
 import java.util.List;
 
 // INTEGRACIÓN DEL PATRÓN STRATEGY
@@ -17,9 +19,11 @@ import java.util.List;
 public class FacturaService {
 
     private final FacturaDAO facturaDAO;
-
+    private final DuenoDAO duenoDAO;
+    
     public FacturaService() {
         this.facturaDAO = new FacturaDAO();
+        this.duenoDAO = new DuenoDAO();
     }
 
     public boolean registrar(Factura factura) {
@@ -121,7 +125,71 @@ public class FacturaService {
 
         factura.setTotal(total);
     }
+    
+    // Generar Reporte de Facturacion por cliente
+    
+    public ReporteFacturacionCliente generarReporteFacturacionPorCliente(
+            String documento) throws SQLException {
 
-   
+        if (documento == null || documento.isBlank()) {
+            throw new IllegalArgumentException(
+                    "El documento del dueño es obligatorio"
+            );
+        }
+
+        Dueno dueno = duenoDAO.buscarPorDocumento(documento);
+
+        if (dueno == null) {
+            return null;
+        }
+
+        List<Factura> facturas = facturaDAO.listarPorDueno(dueno.getId());
+
+        BigDecimal totalGeneral = BigDecimal.ZERO;
+
+        for (Factura factura : facturas) {
+            totalGeneral = totalGeneral.add(factura.getTotal());
+        }
+
+        return new ReporteFacturacionCliente(
+                dueno,
+                facturas,
+                totalGeneral
+        );
+    }
+
+    // Datos del reporte de facturacion por Cliente
+    
+    
+
+    public static class ReporteFacturacionCliente {
+
+        private final Dueno dueno;
+        private final List<Factura> facturas;
+        private final BigDecimal totalGeneral;
+
+        public ReporteFacturacionCliente(
+                Dueno dueno,
+                List<Factura> facturas,
+                BigDecimal totalGeneral) {
+
+            this.dueno = dueno;
+            this.facturas = facturas;
+            this.totalGeneral = totalGeneral;
+            
+            
+        }
+
+        public Dueno getDueno() {
+            return dueno;
+        }
+
+        public List<Factura> getFacturas() {
+            return facturas;
+        }
+
+        public BigDecimal getTotalGeneral() {
+            return totalGeneral;
+        }
+    }
 }
-

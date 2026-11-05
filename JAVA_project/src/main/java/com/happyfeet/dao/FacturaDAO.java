@@ -54,8 +54,7 @@ public class FacturaDAO {
 
         String sql = "SELECT * FROM facturas WHERE id = ?";
 
-        try (Connection conexion = Conexion.getConnection();
-             PreparedStatement ps = conexion.prepareStatement(sql)) {
+        try (Connection conexion = Conexion.getConnection(); PreparedStatement ps = conexion.prepareStatement(sql)) {
 
             ps.setInt(1, id);
 
@@ -93,6 +92,43 @@ public class FacturaDAO {
 
         return facturas;
     }
+    
+    
+    
+    //Listar facturas por dueño
+       public List<Factura> listarPorDueno(int DuenoId) {
+
+        List<Factura> facturas = new ArrayList<>();
+
+        String sql = "SELECT * FROM facturas WHERE dueno_id = ?"
+                + "ORDER BY fecha_emision ASC";
+
+        try (Connection conexion = Conexion.getConnection(); PreparedStatement ps = conexion.prepareStatement(sql)) {
+
+            ps.setInt(1, DuenoId);
+
+            try (ResultSet rs = ps.executeQuery()) {
+
+                while (rs.next()) {
+
+                    facturas.add(convertirResultado(rs));
+
+                }
+
+            }
+        
+        } catch (SQLException e){
+        
+            System.out.println("Error al listar facturas del dueño: "+ e.getMessage());
+            
+        
+        }
+                
+                return facturas;
+        
+       }
+    
+    
 
     // Actualizar una factura
     public boolean actualizar(Factura factura) {

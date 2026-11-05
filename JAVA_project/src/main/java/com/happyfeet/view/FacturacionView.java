@@ -1,16 +1,19 @@
-
 package com.happyfeet.view;
 
 import com.happyfeet.controller.FacturaController;
 import com.happyfeet.facturacion.GeneradorFacturaPDF;
 import com.happyfeet.model.Factura;
+import com.happyfeet.service.FacturaService;
 
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.text.NumberFormat;
 import java.util.List;
+import java.util.Locale;
 import java.util.Scanner;
+
 
 public class FacturacionView {
 
@@ -33,6 +36,7 @@ public class FacturacionView {
             System.out.println("3. Listar facturas");
             System.out.println("4. Actualizar factura");
             System.out.println("5. Eliminar factura");
+            System.out.println("6. Consultar Facturación por Cliente");
             System.out.println("0. Volver al menú principal");
             System.out.print("Seleccione una opción: ");
 
@@ -53,6 +57,9 @@ public class FacturacionView {
                     break;
                 case 5:
                     eliminar();
+                    break;
+                case 6:
+                    consultarFacturacionPorCliente();
                     break;
                 case 0:
                     System.out.println("Regresando al menú principal...");
@@ -240,6 +247,77 @@ public class FacturacionView {
         } catch (IllegalArgumentException e) {
 
             System.out.println("Error: " + e.getMessage());
+        }
+    }
+    
+    
+    //Consultar Facturación por cliente
+    
+    private void consultarFacturacionPorCliente() {
+
+        System.out.println("\n--- CONSULTAR FACTURACIÓN POR CLIENTE ---");
+
+        System.out.print("Ingrese el documento de identidad del dueño: ");
+        String documento = scanner.nextLine();
+
+        try {
+
+            FacturaService.ReporteFacturacionCliente reporte =
+                    controller.generarReporteFacturacionPorCliente(documento);
+
+            if (reporte == null) {
+                System.out.println(
+                        "Error: No se encontró ningún dueño con el documento proporcionado"
+                );
+                return;
+            }
+
+            DateTimeFormatter formatoFecha =
+                    DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+            NumberFormat formatoMoneda =
+                    NumberFormat.getInstance(Locale.forLanguageTag("es-CO"));
+
+            formatoMoneda.setMaximumFractionDigits(0);
+            formatoMoneda.setMinimumFractionDigits(0);
+
+            System.out.println("\nINFORME DE FACTURACIÓN POR CLIENTE");
+            System.out.println("DATOS DEL CLIENTE");
+            System.out.println("Nombre: " + reporte.getDueno().getNombreCompleto());
+            System.out.println("Documento: " + reporte.getDueno().getDocumentoIdentidad());
+
+            System.out.println("\nHISTORIAL DE FACTURAS");
+            System.out.println("ID Factura | Fecha de Emisión | Total Factura");
+
+            List<Factura> facturas = reporte.getFacturas();
+
+            for (Factura factura : facturas) {
+
+                String fecha = "Sin fecha";
+
+                if (factura.getFechaEmision() != null) {
+                    fecha = factura.getFechaEmision().format(formatoFecha);
+                }
+
+                System.out.println(
+                        factura.getId() + " | "
+                        + fecha + " | $ "
+                        + formatoMoneda.format(factura.getTotal())
+                );
+            }
+
+            System.out.println(
+                    "Monto Total General Facturado: $ "
+                    + formatoMoneda.format(reporte.getTotalGeneral())
+            );
+
+        } catch (IllegalArgumentException e) {
+
+            System.out.println("Error: " + e.getMessage());
+
+        } catch (java.sql.SQLException e) {
+
+            System.out.println("Error al consultar facturación: " + e.getMessage());
         }
     }
 

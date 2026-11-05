@@ -89,6 +89,37 @@ public class DuenoDAO {
 
         return null;
     }
+    
+    // BUSCAR DUEÑO POR DOCUMENTO 
+    
+    public Dueno buscarPorDocumento(String documento)throws SQLException{
+    
+    
+        String sql = "SELECT * FROM duenos WHERE documento_identidad =?";
+        
+        try (Connection conexion = Conexion.getConnection();
+             PreparedStatement ps = conexion.prepareStatement(sql)){
+        
+        
+               ps.setString(1, documento);
+               
+               try(ResultSet rs = ps.executeQuery()){
+               
+               
+                   if(rs.next()){
+                   
+                       return convertirResultado(rs);
+                       
+                   }
+               
+               }
+               
+        }
+        
+        return null;
+        
+    }
+    
 
     // ACTUALIZAR LOS DATOS DE UN DUEÑO
     public boolean actualizar(Dueno dueno) throws SQLException {

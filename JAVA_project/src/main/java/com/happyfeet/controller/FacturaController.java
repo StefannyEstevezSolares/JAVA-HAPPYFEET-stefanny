@@ -4,6 +4,7 @@ package com.happyfeet.controller;
 import com.happyfeet.model.Factura;
 import com.happyfeet.service.FacturaService;
 import java.util.List;
+import java.sql.SQLException;
 
 public class FacturaController {
 
@@ -32,4 +33,13 @@ public class FacturaController {
     public boolean eliminar(int id) {
         return facturaService.eliminar(id);
     }
+    
+    
+    // Consultar facturacion por cliente 
+
+public FacturaService.ReporteFacturacionCliente generarReporteFacturacionPorCliente(
+        String documento) throws SQLException {
+
+    return facturaService.generarReporteFacturacionPorCliente(documento);
+}
 }
