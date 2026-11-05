@@ -73,70 +73,80 @@ public class FacturacionView {
 
     private void registrar() {
 
-        System.out.println("\n--- REGISTRAR FACTURA ---");
+    System.out.println("\n--- REGISTRAR FACTURA ---");
 
-        Factura factura = new Factura();
+    Factura factura = new Factura();
 
-        System.out.print("ID del dueño: ");
-        factura.setDuenoId(leerEntero());
+    System.out.println("\nIngrese el ID de un dueño previamente registrado.");
+    System.out.print("ID del dueño: ");
+    factura.setDuenoId(leerEntero());
 
-        System.out.print("Número de factura: ");
-        factura.setNumeroFactura(scanner.nextLine());
+    System.out.println("\nIngrese un número único para identificar la factura.");
+    System.out.print("Número de factura: ");
+    factura.setNumeroFactura(scanner.nextLine());
 
-        factura.setFechaEmision(LocalDateTime.now());
+    factura.setFechaEmision(LocalDateTime.now());
 
-        System.out.print("Subtotal: ");
-        factura.setSubtotal(leerDecimal());
+    System.out.println("\nIngrese el subtotal de la factura. Ejemplo: 1500.00");
+    System.out.print("Subtotal: ");
+    factura.setSubtotal(leerDecimal());
 
-        System.out.print("Impuesto: ");
-        factura.setImpuesto(leerDecimal());
+    System.out.println("\nIngrese el impuesto correspondiente. Ejemplo: 180.00");
+    System.out.print("Impuesto: ");
+    factura.setImpuesto(leerDecimal());
 
-        System.out.print("Descuento: ");
-        factura.setDescuento(leerDecimal());
+    System.out.println("\nIngrese el descuento. Si no aplica, escriba 0.");
+    System.out.print("Descuento: ");
+    factura.setDescuento(leerDecimal());
 
-        System.out.print("Método de pago: ");
-        factura.setMetodoPago(scanner.nextLine());
+    System.out.println("\nSeleccione el método de pago:");
+    System.out.println("Efectivo / Tarjeta / Transferencia / Mixto");
+    System.out.print("Método de pago: ");
+    factura.setMetodoPago(scanner.nextLine());
 
-        System.out.print("Estado: ");
-        factura.setEstado(scanner.nextLine());
+    System.out.println("\nIngrese el estado de la factura:");
+    System.out.println("Pendiente / Pagada / Anulada");
+    System.out.print("Estado: ");
+    factura.setEstado(scanner.nextLine());
 
-        System.out.print("Observaciones: ");
-        factura.setObservaciones(scanner.nextLine());
+    System.out.println("\nIngrese observaciones adicionales. Si no hay, deje el espacio vacío.");
+    System.out.print("Observaciones: ");
+    factura.setObservaciones(scanner.nextLine());
 
-        try {
+    try {
 
-            if (controller.registrar(factura)) {
+        if (controller.registrar(factura)) {
 
-                System.out.println("Factura registrada correctamente.");
-                System.out.println("ID: " + factura.getId());
-                System.out.println("Total calculado: Q" + factura.getTotal());
+            System.out.println("Factura registrada correctamente.");
+            System.out.println("ID: " + factura.getId());
+            System.out.println("Total calculado: Q" + factura.getTotal());
 
-                GeneradorFacturaPDF generador =
-                        new GeneradorFacturaPDF();
+            GeneradorFacturaPDF generador =
+                    new GeneradorFacturaPDF();
 
-                String ruta = generador.generar(factura);
+            String ruta = generador.generar(factura);
 
-                System.out.println("PDF generado correctamente.");
-                System.out.println("Ubicación: " + ruta);
+            System.out.println("PDF generado correctamente.");
+            System.out.println("Ubicación: " + ruta);
 
-            } else {
+        } else {
 
-                System.out.println("No se pudo registrar la factura.");
-            }
-
-        } catch (IllegalArgumentException e) {
-
-            System.out.println("Error: " + e.getMessage());
-
-        } catch (IOException e) {
-
-            System.out.println(
-                    "La factura se registró, pero ocurrió un error al generar el PDF."
-            );
-
-            System.out.println(e.getMessage());
+            System.out.println("No se pudo registrar la factura.");
         }
+
+    } catch (IllegalArgumentException e) {
+
+        System.out.println("Error: " + e.getMessage());
+
+    } catch (IOException e) {
+
+        System.out.println(
+                "La factura se registró, pero ocurrió un error al generar el PDF."
+        );
+
+        System.out.println(e.getMessage());
     }
+}
 
     private void buscar() {
 
